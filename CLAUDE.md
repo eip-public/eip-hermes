@@ -19,6 +19,7 @@ reference them; they don't reimplement them.
 
 ```
 bootstrap-user.sh                  one-time, with sudo: grants the current user passwordless sudo
+AGENTS.md                          concise Hermes-readable project guide
 installers/hermes/
   install.sh                       drop-in component orchestrator
   components/NN-<name>.sh          18 components, numeric-prefix order
@@ -175,7 +176,9 @@ When updating docs:
 - `installers/hermes/PORTS.md` -- port registry. Adding a new listening
   port? It goes here, not in folklore.
 - `CONTRIBUTING.md` -- contributor flow.
-- `CLAUDE.md` (this file) -- the invariants the code holds itself to.
+- `AGENTS.md` -- concise Hermes-readable project guidance.
+- `CLAUDE.md` (this file) -- fuller contributor/AI-agent notes and the
+  invariants the code holds itself to.
 
 If a fact lives in two places, the two will drift. Pick the right home
 for it and link from the other.

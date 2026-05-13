@@ -20,6 +20,8 @@ before exposing the host to anything beyond a trusted LAN.
 ```
 eip-hermes/
 ├── bootstrap-user.sh            # one-time: grants the current user passwordless sudo
+├── AGENTS.md                    # Hermes-readable project guidance
+├── CLAUDE.md                    # fuller contributor/AI-agent notes
 ├── installers/
 │   └── hermes/                  # the main installer -- see its README for detail
 │       ├── install.sh           # drop-in component orchestrator
