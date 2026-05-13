@@ -108,6 +108,7 @@ The default plan runs all enabled components in numeric prefix order.
 | `ai-tools`      | Local Ollama LLM runtime, Node.js, Claude Code CLI, Codex CLI                 | 11434        |
 | `hermes`        | Native Hermes Agent install/update from `NousResearch/hermes-agent`           | --            |
 | `cve-skills`    | Clones `eip-public/security-skills` into `~/.hermes/skills/eip-cve` so Hermes loads the CVE routing-doctrine skill library | -- |
+| `agent-context` | Seeds EIP-specific `SOUL.md`, compact `MEMORY.md`, and an empty `USER.md` placeholder without overwriting existing context | -- |
 | `control-plane` | Hermes API gateway + dashboard + Kanban env/config; systemd units; verify     | 50000, 50010 |
 | `honcho`        | Local Honcho memory backend (clone, env, compose, start) + Hermes-Honcho bridge | 50040      |
 | `mcp-config`    | Registers `eip-mcp`, `semgrep`, and `ghidra-headless-mcp` MCP servers in `~/.hermes/config.yaml` so the cve-skills can call their tools | -- |
@@ -156,6 +157,19 @@ LLM_BASE_URL=http://host.docker.internal:11434/v1 \
 LLM_MODEL=qwen2.5:14b \
 sudo -E ./install.sh --non-interactive
 ```
+
+### Agent context and memory
+
+The `agent-context` component follows Hermes' memory split:
+
+- `SOUL.md` holds stable identity, tone, and safety posture.
+- `memories/MEMORY.md` holds compact always-on environment facts.
+- `memories/USER.md` is left empty for the user profile to grow from real
+  interactions.
+- repeatable CVE/research procedures belong in skills, not in `MEMORY.md`.
+
+Existing files are preserved on re-run. Use `--force` or
+`HERMES_AGENT_CONTEXT_FORCE=true` to regenerate the seeded context.
 
 ## Adding a new component
 

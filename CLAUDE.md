@@ -21,7 +21,7 @@ reference them; they don't reimplement them.
 bootstrap-user.sh                  one-time, with sudo: grants the current user passwordless sudo
 installers/hermes/
   install.sh                       drop-in component orchestrator
-  components/NN-<name>.sh          17 components, numeric-prefix order
+  components/NN-<name>.sh          18 components, numeric-prefix order
   lib/common.sh                    log/success/warn/fail, sudo_cmd, prepend_path,
                                    require_clean_checkout
   lib/security-tools.sh            shared globals/helpers for the security-tool
@@ -97,6 +97,12 @@ These are the invariants the existing code relies on. Don't break them.
    as "diagnostics + side effects." If a command reboots, force-pushes,
    deletes things, or downloads large assets, the user must have
    approved that specific action.
+
+7. **Keep Hermes context in the right layer.** `SOUL.md` is for stable
+   identity and safety posture. `memories/MEMORY.md` is for compact
+   always-on facts. `memories/USER.md` is for user preferences learned
+   from real interactions. Repeatable procedures belong in skills, not
+   in memory files.
 
 ## Validation before commit
 

@@ -83,6 +83,9 @@ The default plan brings up:
   systemd units, a Kanban dispatcher, the local Honcho memory backend,
   and a local Ollama LLM runtime;
 - the EIP CVE skill library, cloned into Hermes' skills directory;
+- an EIP-specific Hermes identity (`SOUL.md`) and compact memory seed
+  that keep identity, always-on facts, and reusable procedures in the
+  right Hermes layers;
 - MCP server registration so the agent can call `eip-mcp`, `semgrep`,
   and `ghidra-headless-mcp` out of the box;
 - a broad security toolchain -- recon, web, mobile, reverse engineering,
