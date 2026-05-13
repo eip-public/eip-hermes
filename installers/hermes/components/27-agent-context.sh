@@ -28,7 +28,6 @@ should_write_context_file() {
   local path="${1:?path required}"
   [ "${SETUP_AGENT_CONTEXT:-true}" = true ] || return 1
   [ "${HERMES_AGENT_CONTEXT_FORCE:-false}" = true ] && return 0
-  [ "${FORCE:-false}" = true ] && return 0
   [ ! -s "$path" ]
 }
 
@@ -36,7 +35,7 @@ write_eip_soul() {
   local path="$HERMES_HOME/SOUL.md"
   mkdir -p "$HERMES_HOME"
   if ! should_write_context_file "$path"; then
-    warn "$path already exists; preserving it. Use --force or HERMES_AGENT_CONTEXT_FORCE=true to regenerate."
+    warn "$path already exists; preserving it. Use HERMES_AGENT_CONTEXT_FORCE=true to regenerate."
     return 0
   fi
 
@@ -68,19 +67,20 @@ EOF
 write_eip_memory() {
   local dir="$HERMES_HOME/memories"
   local path="$dir/MEMORY.md"
+  local cve_skills_dir="${CVE_SKILLS_DIR:-$HERMES_HOME/skills/eip-cve}"
   mkdir -p "$dir"
   if ! should_write_context_file "$path"; then
-    warn "$path already exists; preserving it. Use --force or HERMES_AGENT_CONTEXT_FORCE=true to regenerate."
+    warn "$path already exists; preserving it. Use HERMES_AGENT_CONTEXT_FORCE=true to regenerate."
     return 0
   fi
 
   log "Writing compact EIP Hermes memory to $path"
-  cat >"$path" <<'EOF'
-EIP Hermes is a dedicated Ubuntu 24.04 research-host installer. Main repo path after clone is eip-hermes; Hermes home defaults to ~/.hermes.
+  cat >"$path" <<EOF
+EIP Hermes is a dedicated Ubuntu 24.04 research-host installer. Main repo path after clone is eip-hermes; Hermes home is $HERMES_HOME.
 
 Native EIP/Hermes services should bind 127.0.0.1 in 50000-50999. Current defaults: Hermes API 50000, dashboard 50010, Honcho 50040. Exceptions: Ollama 11434 loopback, optional xrdp 3389.
 
-Installed EIP CVE skills live under ~/.hermes/skills/eip-cve. Use skills for repeatable CVE/research procedures; keep MEMORY.md for compact facts only.
+Installed EIP CVE skills live under $cve_skills_dir. Use skills for repeatable CVE/research procedures; keep MEMORY.md for compact facts only.
 EOF
   chmod 600 "$path"
   success "MEMORY.md ready"

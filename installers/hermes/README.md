@@ -168,7 +168,7 @@ The `agent-context` component follows Hermes' memory split:
   interactions.
 - repeatable CVE/research procedures belong in skills, not in `MEMORY.md`.
 
-Existing files are preserved on re-run. Use `--force` or
+Existing files are preserved on re-run. Use
 `HERMES_AGENT_CONTEXT_FORCE=true` to regenerate the seeded context.
 
 ## Adding a new component
