@@ -30,7 +30,6 @@ sudo_cmd() {
 }
 
 rand_hex() { openssl rand -hex "$1"; }
-rand_b64() { openssl rand -base64 "$1" | tr -d '\n'; }
 
 # Ensure user-local install prefixes are on PATH. Without this, a component
 # run standalone (e.g. ./components/30-control-plane.sh) would not see hermes
