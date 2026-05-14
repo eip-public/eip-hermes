@@ -7,9 +7,9 @@ load while working in the repo.
 ## Project Shape
 
 `eip-hermes` is a modular bash installer for a dedicated Ubuntu 24.04 Hermes
-research host. It installs the Hermes control plane, Honcho memory, Ollama,
-agent CLIs, the EIP CVE skill library, MCP wiring, security tools, and optional
-lab/desktop extras.
+research host. It installs the Hermes control plane, Ollama, agent CLIs, the
+EIP CVE skill library, MCP wiring, security tools, an XFCE+xrdp desktop, and
+the Win11 lab-host clone. Honcho memory is opt-in via `--with honcho`.
 
 The installer is not the runtime. Runtime state lives under the install user's
 `~/.hermes`; this repo should remain an idempotent bring-up layer.
@@ -26,7 +26,7 @@ The installer is not the runtime. Runtime state lives under the install user's
 - Before updating user-editable git checkouts, call
   `require_clean_checkout "$DIR"` so local edits are not silently overwritten.
 - Native services must bind `127.0.0.1` in `50000-50999`. Existing exceptions:
-  Ollama `11434` loopback, optional xrdp `3389`.
+  Ollama `11434` loopback, xrdp `3389` on `0.0.0.0`.
 - `bootstrap-user.sh` is the only script that writes sudoers configuration.
 - Keep Hermes context layered correctly: `SOUL.md` for stable identity,
   `memories/MEMORY.md` for compact always-on facts, `memories/USER.md` for

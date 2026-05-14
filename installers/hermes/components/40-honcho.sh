@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # eip-hermes-component:
 #   name: honcho
-#   description: Local Honcho memory backend (clone, env, compose, start) and Hermes-Honcho bridge config
-#   default: enabled
+#   description: Local Honcho memory backend (clone, env, compose, start) and Hermes-Honcho bridge config — opt-in via --with honcho
+#   default: disabled
 #   ports: 50040:honcho-api
 #   requires: runtimes,ai-tools,hermes
 

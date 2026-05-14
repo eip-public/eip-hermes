@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # eip-hermes-component:
 #   name: rdp
-#   description: XFCE4 desktop + xrdp remote-desktop server (opt-in via --with rdp)
-#   default: disabled
+#   description: XFCE4 desktop + xrdp remote-desktop server
+#   default: enabled
 #   ports: 3389:xrdp
 #   requires: preflight
 #
-# Opt-in extra. Headless installs don't need a desktop, so this is disabled
-# by default. Enable on the command line:
+# On by default — typical lab hosts are headed-ish (RDP'd into) rather than
+# strict headless. Opt out for true headless installs with:
 #
-#   ./install.sh --with rdp
+#   ./install.sh --skip rdp
 #
 # Most of the body is byte-identical with the upstream
 # security-skills/scripts/install-rdp-ubuntu2404.sh script. Two intentional

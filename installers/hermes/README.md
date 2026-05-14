@@ -46,8 +46,8 @@ Read this before running anything. The default plan is large.
 
 This is a fresh-host, dedicated-research-machine install. The
 default plan disables sleep/lid handling, opens Docker to the user's
-group, clones agent runtimes into `$HOME`, and (with `--with rdp`)
-installs xrdp on `0.0.0.0:3389`. **Do not run on a shared
+group, clones agent runtimes into `$HOME`, and installs xrdp on
+`0.0.0.0:3389` (skip with `--skip rdp` for headless). **Do not run on a shared
 workstation, a laptop you also use for production, or a host that's
 reachable from anything you don't trust.** See
 [`SECURITY.md`](../../SECURITY.md).
@@ -110,7 +110,6 @@ The default plan runs all enabled components in numeric prefix order.
 | `cve-skills`    | Clones `eip-public/security-skills` into `~/.hermes/skills/eip-cve` so Hermes loads the CVE routing-doctrine skill library | -- |
 | `agent-context` | Seeds EIP-specific `SOUL.md`, compact `MEMORY.md`, and an empty `USER.md` placeholder without overwriting existing context | -- |
 | `control-plane` | Hermes API gateway + dashboard + Kanban env/config; systemd units; verify     | 50000, 50010 |
-| `honcho`        | Local Honcho memory backend (clone, env, compose, start) + Hermes-Honcho bridge | 50040      |
 | `mcp-config`    | Registers `eip-mcp`, `semgrep`, and `ghidra-headless-mcp` MCP servers in `~/.hermes/config.yaml` so the cve-skills can call their tools | -- |
 
 ### Security tooling (50–85)
@@ -125,6 +124,14 @@ The default plan runs all enabled components in numeric prefix order.
 | `re`            | Ghidra, BinExport, BinDiff, winbindex, ghidra-headless-mcp                    |
 | `exploit-dev`   | pwndbg, syzkaller (`syz-manager`), one_gadget                                 |
 
+### Desktop (90)
+
+Default-enabled. Skip with `--skip rdp` for a strict headless install:
+
+| Component  | What it does                                                                                                  |
+|------------|---------------------------------------------------------------------------------------------------------------|
+| `rdp`      | XFCE4 desktop + xfce4-terminal (set as default x-terminal-emulator) + xrdp (port 3389, 0.0.0.0). Disables suspend/lid in logind. Front with SSH tunnel or host firewall — don't expose `:3389` directly. |
+
 ### Lab integration (91)
 
 Default-enabled. Skip with `--skip lab-host`:
@@ -133,15 +140,16 @@ Default-enabled. Skip with `--skip lab-host`:
 |------------|---------------------------------------------------------------------------------------------------------------|
 | `lab-host` | Clones `eip-public/win11-forge` into `$WINFORGE_DIR` (default `~/win11-forge`). The heavy lab dependencies (KVM/libvirt/qemu/ovmf, ghidriff, BinExport, Win11/virtio ISOs) are **not** installed here -- run `~/win11-forge/install-deps.sh` yourself when you want to actually build a lab. |
 
-### Optional extras (90+)
+### Optional extras
 
 `default: disabled`; add with `--with NAME[,...]`:
 
 | Component  | What it does                                                                                                  |
 |------------|---------------------------------------------------------------------------------------------------------------|
-| `rdp`      | XFCE4 desktop + xfce4-terminal (set as default x-terminal-emulator) + xrdp (port 3389). Disables suspend/lid in logind. `./install.sh --with rdp`. |
+| `honcho`   | Local Honcho memory backend (clone, env, compose, start) + Hermes-Honcho bridge (port 50040). `./install.sh --with honcho`. |
 
-All services bind to `127.0.0.1`. See [PORTS.md](PORTS.md) for the registry
+All native services bind to `127.0.0.1` (xrdp is the documented
+`0.0.0.0` exception). See [PORTS.md](PORTS.md) for the registry
 and rationale.
 
 ## Configuration
@@ -264,7 +272,7 @@ Skip parts of the default plan with `--skip NAME[,...]`:
 Add `default: disabled` extras to the default plan with `--with NAME[,...]`:
 
 ```bash
-./install.sh --with rdp        # full default plan + XFCE/xrdp
+./install.sh --with honcho     # full default plan + local Honcho memory backend
 ```
 
 Run only specific components (and their dependencies) with `--only NAME[,...]`:

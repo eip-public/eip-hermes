@@ -3,17 +3,17 @@
 A clean, modular bring-up of the **Hermes** AI agent for responsible CVE
 research, on Ubuntu 24.04. One bootstrap script provisions a non-root user
 with passwordless sudo; one drop-in installer brings up the full local
-control plane: Hermes itself (gateway + dashboard + Kanban), a local Honcho
-memory backend, an Ollama LLM runtime, and the agent CLIs you'll log into
-(Claude Code, Codex).
+control plane: Hermes itself (gateway + dashboard + Kanban), an Ollama LLM
+runtime, and the agent CLIs you'll log into (Claude Code, Codex).
 
 Default-plan native services bind `127.0.0.1` and live under the user's
-home. The opt-in `rdp` component installs xrdp with its stock config,
-which listens on `0.0.0.0:3389` — front it with an SSH tunnel or host
-firewall; don't expose `:3389` directly. Containers and VMs spawned by
-labs may bind their own ports that the installer does not centrally
-constrain. See [`SECURITY.md`](SECURITY.md) for the full threat model
-before exposing the host to anything beyond a trusted LAN.
+home. The default-enabled `rdp` component installs xrdp with its stock
+config, which listens on `0.0.0.0:3389` — front it with an SSH tunnel or
+host firewall; don't expose `:3389` directly. Skip with `--skip rdp` for
+a strict headless install. Containers and VMs spawned by labs may bind
+their own ports that the installer does not centrally constrain. See
+[`SECURITY.md`](SECURITY.md) for the full threat model before exposing
+the host to anything beyond a trusted LAN.
 
 ## Layout
 
@@ -71,8 +71,8 @@ see [`installers/hermes/README.md`](installers/hermes/README.md) and
 - **Loopback by default.** Native services occupy `50000-50999` on
   `127.0.0.1`; the range was chosen after a previous setup collided
   with research lab targets on common low ports. Two documented
-  exceptions: Ollama (`11434`, loopback-bound) and the opt-in xrdp
-  service (`3389`, `0.0.0.0` — see `SECURITY.md` and `PORTS.md`).
+  exceptions: Ollama (`11434`, loopback-bound) and xrdp (`3389`,
+  `0.0.0.0` — see `SECURITY.md` and `PORTS.md`).
 - **Two-step provisioning.** `bootstrap-user.sh` is intentionally separate
   from the main installer because granting `NOPASSWD:ALL` is security-sensitive
   and deserves an explicit, auditable, single-purpose script.
@@ -82,8 +82,7 @@ see [`installers/hermes/README.md`](installers/hermes/README.md) and
 The default plan brings up:
 
 - the Hermes control plane -- Hermes itself, the gateway/dashboard
-  systemd units, a Kanban dispatcher, the local Honcho memory backend,
-  and a local Ollama LLM runtime;
+  systemd units, a Kanban dispatcher, and a local Ollama LLM runtime;
 - the EIP CVE skill library, cloned into Hermes' skills directory;
 - an EIP-specific Hermes identity (`SOUL.md`) and compact memory seed
   that keep identity, always-on facts, and reusable procedures in the
@@ -98,9 +97,11 @@ The default plan brings up:
   and Win11/virtio ISOs are *not* installed here; run
   `~/win11-forge/install-deps.sh` yourself when you actually want to
   build a lab. Skip the clone with `--skip lab-host`.
+- an XFCE4 desktop + xrdp on `0.0.0.0:3389` (the `rdp` component). Skip
+  with `--skip rdp` for a strict headless install.
 
-One opt-in extra is available via `--with NAME`: an XFCE + xrdp remote
-desktop (`--with rdp`).
+Opt-in extras (off by default, add with `--with NAME`): the local Honcho
+memory backend (`--with honcho`, port 50040).
 
 For the full component list, what each one installs, and how to
 skip / add / `--only` them, see
