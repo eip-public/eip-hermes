@@ -141,11 +141,18 @@ install_codex() {
 print_login_hint() {
   cat <<EOF
 
-Next: log into the agent CLIs and prepare a model for Honcho.
+Next: log into the agent CLIs.
 
-  Agent CLIs (do these once, in another shell; independent of the model below):
+  Agent CLIs (do these once, in another shell):
     claude login                              # Anthropic Claude Code
     codex login                               # OpenAI Codex
+EOF
+
+  # Model-selection guidance is only relevant when Honcho is part of the
+  # plan. Hermes itself doesn't talk to Ollama directly; the bridge is in
+  # 40-honcho.sh.
+  if [ "${SETUP_HONCHO:-false}" = true ]; then
+    cat <<EOF
 
   Pick a model Honcho will use, one of:
 
@@ -161,14 +168,19 @@ Next: log into the agent CLIs and prepare a model for Honcho.
   Honcho will auto-pick the first model 'ollama list' returns. To force a
   specific one, export LLM_MODEL=<name> before re-running --only honcho.
 EOF
+  fi
 }
 
 # Hold the installer until the user has pulled at least one Ollama model.
 # Without this, 40-honcho runs against an empty Ollama and Hermes ends up wired
 # to the .env.template defaults, requiring a manual --only honcho --force
-# rerun. Skipped under --non-interactive (CI) and skipped on re-runs where a
-# model is already present.
+# rerun. Skipped when Honcho isn't part of the plan (no consumer = nothing
+# to wait for), under --non-interactive (CI), and on re-runs where a model
+# is already present.
 pause_for_model() {
+  if [ "${SETUP_HONCHO:-false}" != true ]; then
+    return 0
+  fi
   if [ "${NON_INTERACTIVE:-false}" = "true" ]; then
     return 0
   fi
