@@ -43,6 +43,33 @@ install_or_update_hermes() {
   need_cmd hermes && success "Hermes installed: $(command -v hermes)" || warn "hermes command is not on PATH yet."
 }
 
+install_playwright_chromium() {
+  # hermes' agent-browser uses Playwright's bundled Chromium for the
+  # browser_*, browser-cdp, and computer_use tool families. Without it,
+  # `hermes doctor` reports them as "system dependency not met". Brave/
+  # Chrome don't satisfy this — Playwright needs its own Chromium build
+  # with CDP control hooks.
+  #
+  # Run as the current user (not sudo): Chromium downloads into the user's
+  # Playwright cache and must be readable by the user-mode hermes process.
+  # `--with-deps` makes Playwright internally call `sudo apt-get install`
+  # for the system libraries Chromium needs (libnss3, libatk1.0-0, etc.);
+  # bootstrap-user.sh has already granted passwordless sudo.
+  if [ "$INSTALL_PLAYWRIGHT_CHROMIUM" != true ]; then
+    warn "Skipping Playwright Chromium install (INSTALL_PLAYWRIGHT_CHROMIUM != true)"
+    return 0
+  fi
+  need_cmd npx || { warn "npx not found; cannot install Playwright Chromium"; return 1; }
+  [ -d "$HERMES_INSTALL_DIR" ] || { warn "$HERMES_INSTALL_DIR missing; skipping Playwright"; return 1; }
+  log "Installing Playwright Chromium under $HERMES_INSTALL_DIR"
+  if ( cd "$HERMES_INSTALL_DIR" && npx playwright install --with-deps chromium ); then
+    success "Playwright Chromium installed"
+  else
+    warn "Playwright Chromium install failed; hermes browser_* tools will be hidden in 'hermes doctor'"
+    return 1
+  fi
+}
+
 # === component entry points ================================================
 
 run() {
@@ -52,6 +79,7 @@ run() {
   # stale tree without a clear signal.
   require_clean_checkout "$HERMES_INSTALL_DIR"
   install_or_update_hermes
+  install_playwright_chromium
 }
 
 verify() {
