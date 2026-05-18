@@ -258,7 +258,7 @@ def collect(args: argparse.Namespace) -> list[dict]:
         contexts = [
             ctx for ctx in iter_contexts(record)
             if release_matches(ctx["release"], args.windows, args.release)
-            and (not args.kb or ctx["kb"].lower() == args.kb.lower().removeprefix("kb"))
+            and (not args.kb or ctx["kb"].lower().removeprefix("kb") == args.kb.lower().removeprefix("kb"))
         ]
         if not contexts:
             continue
