@@ -22,7 +22,7 @@ bootstrap-user.sh                  one-time, with sudo: grants the current user 
 AGENTS.md                          concise Hermes-readable project guide
 installers/hermes/
   install.sh                       drop-in component orchestrator
-  components/NN-<name>.sh          18 components, numeric-prefix order
+  components/NN-<name>.sh          19 components, numeric-prefix order
   lib/common.sh                    log/success/warn/fail, sudo_cmd, prepend_path,
                                    require_clean_checkout
   lib/security-tools.sh            shared globals/helpers for the security-tool
@@ -33,6 +33,8 @@ installers/hermes/
   PORTS.md                         port registry
   README.md                        user-facing quickstart + component table
   components/TEMPLATE.sh           contributor template
+  27-agent-context seeds $HERMES_HOME/SOUL.md, memories/MEMORY.md,
+                         memories/USER.md on first install
 CONTRIBUTING.md                    add-a-component walkthrough
 README.md                          high-level intro for the repo's front page
 ```
@@ -104,6 +106,26 @@ These are the invariants the existing code relies on. Don't break them.
    always-on facts. `memories/USER.md` is for user preferences learned
    from real interactions. Repeatable procedures belong in skills, not
    in memory files.
+
+   The `27-agent-context` component seeds all three on first install.
+   Re-running preserves existing files; set `HERMES_AGENT_CONTEXT_FORCE=true`
+   to regenerate them (useful after modifying the seed templates in the
+   component).
+
+## Branch and PR workflow
+
+All changes go through a branch + PR. Never push to `main` directly.
+
+```bash
+git checkout -b <area>/<slug>   # e.g. feat/add-component, fix/sudo-reexec, chore/update-readme
+# make changes
+git add <files>
+git commit -m "Short imperative subject"
+git push -u origin <area>/<slug>
+# open PR for review
+```
+
+Use `feat/` for new capability, `fix/` for bugs, `chore/` for maintenance/docs/cleanup, `scripts/` for one-off ops scripts.
 
 ## Validation before commit
 
