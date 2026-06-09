@@ -1,0 +1,62 @@
+name: Claude Auto Review
+
+# Automatic Claude code review on every pull request. Review-only:
+# `contents: read` + a comment-only tool allow-list, so it CANNOT merge, push,
+# or modify code. Requires repo secret CLAUDE_CODE_OAUTH_TOKEN (`claude
+# setup-token`) and the Claude GitHub App (https://github.com/apps/claude)
+# with access to this repo. Runs on GitHub-hosted runners.
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            This is `eip-hermes`: a mostly-bash bring-up of the "Hermes" AI agent
+            for responsible CVE research on Ubuntu 24.04. A bootstrap script
+            provisions a non-root user with passwordless sudo; a drop-in
+            installer brings up a local control plane (Hermes gateway/dashboard/
+            Kanban, an Ollama LLM runtime, agent CLIs) plus optional components
+            (e.g. an `rdp`/xrdp component). Adapt your review to the diff.
+
+            Review this pull request, focusing on:
+            - Shell-script safety & idempotency: missing `set -euo pipefail`,
+              unquoted expansions and word-splitting, unsafe `rm`/overwrites,
+              `curl | bash` of unpinned remote content, race conditions, and
+              operations that aren't safely re-runnable.
+            - Network exposure & privilege: services binding 0.0.0.0 vs
+              127.0.0.1; the rdp/xrdp component listens on 0.0.0.0:3389 and must
+              be tunnel/firewall-gated, not exposed directly — flag changes that
+              widen exposure or default-enable risky listeners. Scrutinize sudo/
+              passwordless-sudo grants and privilege escalation.
+            - Secrets handling: API keys, tokens, model creds, or passwords
+              committed or written world-readable; `.env` handling.
+            - Correctness: destructive or irreversible provisioning steps, broken
+              installs, and unhandled failure paths.
+            - Clarity and maintainability, matching surrounding conventions.
+
+            Note: The PR branch is already checked out in the current working directory.
+
+            Use `gh pr comment` for top-level feedback.
+            Use `mcp__github_inline_comment__create_inline_comment` (with `confirmed: true`) to highlight specific code issues.
+            Only post GitHub comments - don't submit review text as messages.
+
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
